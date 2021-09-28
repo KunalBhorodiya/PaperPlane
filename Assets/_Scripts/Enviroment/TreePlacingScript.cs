@@ -16,44 +16,42 @@ public class TreePlacingScript : MonoBehaviour
     private Vector2     _placingAreaBoundationsXAxis;
     private Vector2     _placingAreaBoundationsZAxis;
 
+    private List<GameObject> _treeList;
+
     void Start()
     {
-        
+        _treeList = new List<GameObject>();
+        _placingAreaBoundationsXAxis = new Vector2(0, 100);
+        _placingAreaBoundationsZAxis = new Vector2(0, 100);
+        PlaceTrees(_objectCount);
     }
-
 
     public void GetNewMeshGenerationData(int xSize, int zSize, int xManuSize, int zManuSize, int currentXsize, int currentZSize)
     {
         int newXSize = 0;
         int newZSize = 0;
-        if (zManuSize > zSize)
-        {
-            newZSize = zManuSize - zSize;
-        }
-        else
-        {
-            newZSize = zManuSize - currentZSize;
-        }
-        if (xManuSize > xSize)
-        {
-            newXSize = xManuSize - zSize;
-        }
-        else
-        {
-            newXSize = zManuSize - currentXsize;
-        }
 
-        _placingAreaBoundationsXAxis = new Vector2(currentXsize, newXSize);
-        _placingAreaBoundationsZAxis = new Vector2(currentZSize, newZSize);
-        PlaceTrees();
+        if (currentXsize != 0)
+            newXSize = xManuSize - currentXsize;
+        else
+            newXSize = currentXsize;
+
+        if (currentZSize != 0)
+            newZSize = zManuSize - currentZSize;
+        else
+            newZSize = currentZSize;
+
+        _placingAreaBoundationsXAxis = new Vector2(newXSize, xManuSize);
+        _placingAreaBoundationsZAxis = new Vector2(newZSize, zManuSize);
+        PlaceTrees(new Vector2(1, 2));
     }
 
-    private void PlaceTrees()
+    private void PlaceTrees(Vector2 objectCount)
     {
         if (_treeObjectList == null && _treeObjectList.Count == 0)
             return;
 
-        float newTreeCount = Random.Range(_objectCount.x, _objectCount.y);
+        float newTreeCount = Random.Range(objectCount.x, objectCount.y);
 
         for (int i = 0; i < (int)newTreeCount; i++)
         {
@@ -65,8 +63,15 @@ public class TreePlacingScript : MonoBehaviour
 
                 Vector3 treePlacingPosition = new Vector3(_randomXAxis, _randomYAxis, _randomZAxis);
 
-                Instantiate(treeobject, treePlacingPosition, Quaternion.identity, this.gameObject.transform);
+                GameObject newTreeClone = Instantiate(treeobject, treePlacingPosition, Quaternion.identity, this.gameObject.transform);
+                _treeList.Add(newTreeClone);
             }
+        }
+
+        for (int i = 0; i < _treeObjectList.Count; i++)
+        {
+            Destroy(_treeList[i]);
+            _treeList.RemoveAt(i);
         }
     }
 

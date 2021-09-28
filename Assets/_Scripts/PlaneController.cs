@@ -14,13 +14,21 @@ public class PlaneController : MonoBehaviour
     //[SerializeField] private float _controlYawFactor        = -10.0f;
     [SerializeField] private float _controlRollFactor       = -10.0f;
 
+    [SerializeField] private MeshGenerator _meshGenerator   = null;
+
 
     // Private Members
     private float _xMovement            = 0.0f;
     private float _yMovement            = 0.0f;
+    private float _zMovement            = 0.0f;
     private float pitch                 = 0.0f;
     private float yaw                   = 0.0f;
     private float roll                  = 0.0f;
+
+    private void Start()
+    {
+        _zMovement = transform.position.z;
+    }
 
     void Update()
     {
@@ -49,6 +57,13 @@ public class PlaneController : MonoBehaviour
         float yPosition = transform.localPosition.y + _yMovement * _planeZSpeed * Time.deltaTime;
         float zPosition = transform.localPosition.z + _planeZSpeed * Time.deltaTime;
         transform.localPosition = new Vector3(xPosition, yPosition, zPosition);
+
+        if(zPosition - _zMovement > 1)
+        {
+            int temp = (int)zPosition - (int)_zMovement;
+            _meshGenerator.GenerateNewMesh((int)_xMovement, temp);
+            _zMovement = zPosition;
+        }
     }
 
 }

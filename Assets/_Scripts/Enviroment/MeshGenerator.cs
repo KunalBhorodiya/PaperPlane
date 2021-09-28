@@ -7,23 +7,31 @@ using UnityEngine;
 public class MeshGenerator : MonoBehaviour
 {
     // Private Members
-    private Mesh _mesh;
-    private Vector3[] _vertices;
-    private int[] _triangles;
-    private int _lastXSize = 0;
-    private int _lastZSize = 0;
-    private bool _canInstantiateNewTrees = false;
+    private Mesh        _mesh;
+    private Vector3[]   _vertices;
+    private int[]       _triangles;
+    private int         _lastXSize      = 0;
+    private int         _lastZSize      = 0;
+    private int         _positionsCounts = 0;
+    private List<GameObject> _cloneTreeObjectList;
 
     // Inspector Visible
-    [SerializeField] private TreePlacingScript _treePlacingScript;
+    //[SerializeField] TreePooling    _treePooling;
 
     // Public Members
-    public int xSize = 20;
-    public int zSize = 20;
-    public int xManuSize = 0;
-    public int zManuSize = 0;
-    public int manuXVertex = 0;
-    public int manuZVertex = 0;
+    public int xSize            = 20;
+    public int zSize            = 20;
+    public int xManuSize        = 0;
+    public int zManuSize        = 0;
+    public int manuXVertex      = 0;
+    public int manuZVertex      = 0;
+    //public int manuXVertexTemp = 0;
+    //public int manuZVertexTemp = 0;
+
+    private void Awake()
+    {
+        _cloneTreeObjectList = new List<GameObject>();
+    }
 
     private void Start()
     {
@@ -33,43 +41,25 @@ public class MeshGenerator : MonoBehaviour
         xManuSize = xSize;
         zManuSize = zSize;
 
+        //manuXVertexTemp = xSize;
+        //manuZVertexTemp = zSize;
+
         _lastXSize = xSize;
         _lastZSize = zSize;
-        _treePlacingScript.GetNewMeshGenerationData(xSize, zSize, xManuSize, zManuSize, manuXVertex, manuZVertex);
-        //GenerateMesh();
+
+        GenerateMesh();
     }
 
     private void Update()
     {
-        GenerateMesh();
+        //GenerateMesh();
     }
 
     void GenerateMesh()
     {
+        manuXVertex = xManuSize - _lastXSize;
+        manuZVertex = zManuSize - _lastZSize;
 
-        //  For Mesh Move Settings to X Axis
-        if (_lastXSize > xManuSize || _lastXSize < xManuSize)
-        {
-            manuXVertex = xManuSize - _lastXSize;
-            _lastXSize = xSize;
-            //_treePlacingScript.GetNewMeshGenerationData(xManuSize, zManuSize, manuXVertex, manuZVertex);
-        }
-        else if (_lastXSize == xManuSize)
-        {
-            manuXVertex = 0;
-        }
-        //  For Mesh Move Settings to Z Axis
-        if (_lastZSize > zManuSize || _lastZSize < zManuSize)
-        {
-            manuZVertex = zManuSize - _lastZSize;
-            _lastZSize = zSize;
-            //_treePlacingScript.GetNewMeshGenerationData(xManuSize, zManuSize, manuXVertex, manuZVertex);
-        }
-        else if (_lastZSize == zManuSize)
-        {
-            manuZVertex = 0;
-        }
-        
         CreateShape();
         UpdateShape();
     }
@@ -84,8 +74,23 @@ public class MeshGenerator : MonoBehaviour
         {
             for (int x = manuXVertex; x <= xManuSize; x++)
             {
-                _vertices[i] = new Vector3(x, 0, z);
+                float height = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
+                _vertices[i] = new Vector3(x, height, z);
                 i++;
+
+                bool canInstantiate = UnityEngine.Random.Range(1, 80) == 3;
+
+                if (canInstantiate)
+                {
+                    GameObject newTreeToPlace = TreePooling.GetTreeFromPool();
+                    if (newTreeToPlace != null)
+                    {
+                        Vector3 newTreePosition = new Vector3(x, height, z);
+                        newTreeToPlace.transform.position = newTreePosition;
+                        newTreeToPlace.SetActive(true);
+                        _cloneTreeObjectList.Add(newTreeToPlace);
+                    }
+                }
             }
         }
 
@@ -123,14 +128,38 @@ public class MeshGenerator : MonoBehaviour
         _mesh.RecalculateNormals();
     }
 
+    private void HideUnwantedTrees()
+    {
+        for(int i = 0; i < _cloneTreeObjectList.Count; i++)
+        {
+            if(_cloneTreeObjectList[i] != null)
+            {
+                if(_cloneTreeObjectList[i].transform.position.z < _positionsCounts)
+                {
+                    _cloneTreeObjectList[i].SetActive(false);
+                }
+            }
+        }
+        _cloneTreeObjectList.Clear();
+    }
+
+    public void GenerateNewMesh(int xAxis, int zAxis)
+    {
+        xManuSize += xAxis;
+        zManuSize += zAxis;
+        _positionsCounts += 1;
+        GenerateMesh();
+        HideUnwantedTrees();
+    }
+
     /*private void OnDrawGizmos()
     {
-        if (vertices == null)
+        if (_vertices == null)
             return;
 
-        for (int i = 0; i < vertices.Length; i++)
+        for (int i = 0; i < _vertices.Length; i++)
         {
-            Gizmos.DrawSphere(vertices[i], .1f);
+            Gizmos.DrawSphere(_vertices[i], .1f);
         }
     }*/
 }

@@ -333,7 +333,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f49cc27fbe6c384683958ce37fe53a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _treePlacingScript: {fileID: 1343156100}
   xSize: 100
   zSize: 100
   xManuSize: 0
@@ -447,12 +446,12 @@ GameObject:
   - component: {fileID: 1343156099}
   - component: {fileID: 1343156100}
   m_Layer: 0
-  m_Name: Trees
+  m_Name: TreePool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1343156099
 Transform:
   m_ObjectHideFlags: 0
@@ -476,10 +475,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1343156098}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcd5803f89bab04cb5d10b8bc15a536, type: 3}
+  m_Script: {fileID: 11500000, guid: 8540c6004affc61419e1abf11babfd4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _treeObjectList:
+  - {fileID: 8609130348528924705, guid: f7eba3538efb3934e90ccef6726b29c5, type: 3}
   - {fileID: 8357847461122339176, guid: b4a2ca805b9833c43aa90076aae21782, type: 3}
   - {fileID: 4758320736280360116, guid: 82a2c5a968836f6459046e0968866a3e, type: 3}
   - {fileID: 5684698141735366241, guid: 00189f9f69b78bc4bb298d8c474e85b5, type: 3}
@@ -499,8 +499,7 @@ MonoBehaviour:
   - {fileID: 7997339219463967835, guid: e91ce38fba251ac42884447438c22f8f, type: 3}
   - {fileID: 1642404837976222702, guid: ab55324239a274f4eae12c36a43519aa, type: 3}
   - {fileID: 2295145083596782902, guid: 640cedf6d2b36f04381d096106b61eec, type: 3}
-  - {fileID: 8609130348528924705, guid: f7eba3538efb3934e90ccef6726b29c5, type: 3}
-  _objectCount: {x: 10, y: 20}
+  _numOfTrees: 500
 --- !u!1 &1564668467
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,14 +513,13 @@ GameObject:
   - component: {fileID: 1564668469}
   - component: {fileID: 1564668468}
   - component: {fileID: 1564668472}
-  - component: {fileID: 1564668473}
   m_Layer: 0
   m_Name: Airplane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1564668468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,9 +533,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _planeXSpeed: 20
-  _planeZSpeed: 50
+  _planeZSpeed: 1
   _controlPitchFactor: -12
   _controlRollFactor: -30
+  _meshGenerator: {fileID: 837057446}
 --- !u!23 &1564668469
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -595,7 +594,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564668467}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: -2.15}
+  m_LocalPosition: {x: 50, y: 4, z: 20}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
@@ -614,22 +613,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.00936044, y: 0.0036601708, z: 0.01704245}
   m_Center: {x: 0.000104317674, y: -0.0010562004, z: 0.0018340969}
---- !u!54 &1564668473
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1564668467}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &1592476699
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,7 +629,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1592476700
 Transform:
   m_ObjectHideFlags: 0
